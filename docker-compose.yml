@@ -1,0 +1,41 @@
+version: '3'
+services:
+    mysql:
+        image: mysql:5.7
+        ports:
+            - "3306:3306"
+        volumes:
+            - /Users/felix/work/docker/data/mysql/db:/var/lib/mysql
+            - /usr/local/var/log/mysql:/var/log/mysql
+        # 环境变量
+        environment:
+            # mysql密码
+            - MYSQL_ROOT_PASSWORD=root8888
+            - TZ=Asia/Shanghai
+        networks:
+            app_net:
+                #固定IP
+                ipv4_address: 192.168.1.88
+        container_name: "compose-mysql"
+        restart: always
+    redis:
+        image: redis:latest
+        ports:
+            - "6379:6379"
+        volumes:
+            - /Users/felix/work/docker/data/redis:/data
+            - ./redis/redis.conf:/etc/redis.conf
+        command: redis-server /etc/redis.conf
+        networks:
+            - app_net
+        container_name: "compose-redis"
+        restart: always
+        environment:
+            - TZ=Asia/Shanghai
+networks:
+    app_net:
+        driver: bridge
+        ipam:
+            config:
+                # 子网络
+                - subnet: 192.168.1.0/16
